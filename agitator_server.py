@@ -35,7 +35,6 @@ if __name__ == '__main__':
     import serial.tools.list_ports
 
     parser = ArgumentParser(description='Start a server for the agitator')
-    parser.add_argument('type', default='rpc')
     parser.add_argument('--host', default='localhost')
     parser.add_argument('-p', '--port', default=5000)
     parser.add_argument('-c', '--comport', default=None)
@@ -57,15 +56,10 @@ if __name__ == '__main__':
             print('Could not find Agitator COM Port. Exiting...')
             sys.exit(0)
 
-    if args.type.lower() == 'socket':
-        print('SOCKET!')
-    elif args.type.lower() == 'rpc':
-        with AgitatorRPCServer((args.host, args.port), comport=args.comport, allow_none=True) as server:
-            print('Starting server on http://{}:{}'.format(args.host, args.port))
-            try:
-                server.serve_forever()
-            except KeyboardInterrupt:
-                print('\nKeyboard Interrupt received. Exiting...')
-                sys.exit(0)
-    else:
-        print('Invalid server type. Closing....')
+    with AgitatorRPCServer((args.host, args.port), comport=args.comport, allow_none=True) as server:
+        print('Starting server on http://{}:{}'.format(args.host, args.port))
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            print('\nKeyboard Interrupt received. Exiting...')
+            sys.exit(0)
