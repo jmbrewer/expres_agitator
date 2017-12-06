@@ -31,13 +31,29 @@ class AgitatorRPCServer(SimpleXMLRPCServer):
 if __name__ == '__main__':
     import sys
     from argparse import ArgumentParser
+    import serial
+    import serial.tools.list_ports
 
     parser = ArgumentParser(description='Start a server for the agitator')
     parser.add_argument('type', default='rpc')
     parser.add_argument('--host', default='localhost')
     parser.add_argument('-p', '--port', default=5000)
+    parser.add_argument('-c', '--comport', default=None)
     args = parser.parse_args()
 
+    if args.comport is None:
+        for port in serial.tools.list_ports.comports():
+            try:
+                agitator = Agitator(port)
+                del agitator
+                args.comport = port
+                break
+            except (OSError, serial.SerialException):
+                pass
+        else:
+            print('Could not find Agitator COM Port. Exiting...')
+            sys.exit(0)
+    
     if args.type.lower() == 'socket':
         print('SOCKET!')
     elif args.type.lower() == 'rpc':
