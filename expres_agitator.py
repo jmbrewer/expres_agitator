@@ -24,6 +24,7 @@ class Agitator:
                 timeout=__DEFAULT_TIMEOUT__,
                 retries=__DEFAULT_RETRIES__,
                 inter_byte_timeout=__DEFAULT_INTER_BYTE_TIMEOUT__)
+        self.stop_agitation()
 
     def start_agitation(self, exp_time=2):
         self.set_voltage1(Motor1.calc_voltage(self.battery_voltage, exp_time))
@@ -36,6 +37,9 @@ class Agitator:
         self.set_voltage1(voltage)
         self.set_voltage2(voltage)
 
+    def get_voltage1(self):
+        return self._voltage1
+
     def set_voltage1(self, voltage):
         battery_voltage = self.battery_voltage
         if abs(voltage) > battery_voltage:
@@ -44,7 +48,12 @@ class Agitator:
             self._rc.ForwardM1(int(voltage/battery_voltage*127))
         else:
             self._rc.BackwardM1(int(-voltage/battery_voltage*127))
-        self.voltage1 = voltage
+        self._voltage1 = voltage
+
+    voltage1 = property(get_voltage1, set_voltage1)
+
+    def get_voltage2(self):
+        return self._voltage2
 
     def set_voltage2(self, voltage):
         battery_voltage = self.battery_voltage
@@ -54,7 +63,9 @@ class Agitator:
             self._rc.ForwardM2(int(voltage/battery_voltage*127))
         else:
             self._rc.BackwardM2(int(-voltage/battery_voltage*127))
-        self.voltage2 = voltage
+        self._voltage2 = voltage
+
+    voltage2 = property(get_voltage2, set_voltage2)
 
     def get_battery_voltage(self):
         return self._rc.ReadMainBatteryVoltage()[1] / 10
