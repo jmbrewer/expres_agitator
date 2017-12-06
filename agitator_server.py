@@ -56,10 +56,10 @@ if __name__ == '__main__':
             print('Could not find Agitator COM Port. Exiting...')
             sys.exit(0)
 
-    with AgitatorRPCServer((args.host, args.port), comport=args.comport, allow_none=True) as server:
-        print('Starting server on http://{}:{}'.format(args.host, args.port))
-        try:
-            server.serve_forever()
-        except KeyboardInterrupt:
-            print('\nKeyboard Interrupt received. Exiting...')
-            sys.exit(0)
+    server = AgitatorRPCServer((args.host, args.port), comport=args.comport, allow_none=True)
+    print('Starting server on http://{}:{}'.format(args.host, args.port))
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print('\nKeyboard Interrupt received. Exiting...')
+        sys.exit(0)
