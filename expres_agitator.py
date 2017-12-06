@@ -8,7 +8,7 @@
 import numpy as np
 from roboclaw import Roboclaw
 
-__DEFAULT_PORT__ = 'COM4'
+__DEFAULT_PORT__ = 'COM5'
 __DEFAULT_BAUD_RATE__ = 38400
 __DEFAULT_ADDR__ = 0x80
 __DEFAULT_TIMEOUT__ = 3.0
@@ -17,113 +17,91 @@ __DEFAULT_INTER_BYTE_TIMEOUT__ = 1.0
 
 class Agitator:
 
-    port = __DEFAULT_PORT__
-    baud_rate = __DEFAULT_BAUD_RATE__
-    addr = __DEFAULT_ADDR__
-    timeout = __DEFAULT_TIMEOUT__
-    retries = __DEFAULT_RETRIES__
-    inter_byte_timeout = __DEFAULT_INTER_BYTE_TIMEOUT__
+    def __init__(self, comport=__DEFAULT_PORT__):
+        self._rc = Roboclaw(comport=comport,
+                rate=__DEFAULT_BAUD_RATE__,
+                addr=__DEFAULT_ADDR__,
+                timeout=__DEFAULT_TIMEOUT__,
+                retries=__DEFAULT_RETRIES__,
+                inter_byte_timeout=__DEFAULT_INTER_BYTE_TIMEOUT__)
 
-    _rc = Roboclaw(comport=port,
-                   rate=baud_rate,
-                   addr=addr,
-                   timeout=timeout,
-                   retries=retries,
-                   inter_byte_timeout=inter_byte_timeout)
+    def start_agitation(self, exp_time=2):
+        self.set_voltage1(Motor1.calc_voltage(self.battery_voltage, exp_time))
+        self.set_voltage2(Motor2.calc_voltage(self.battery_voltage, exp_time*0.9))
 
-    def __init__(self):
-        pass
+    def stop_agitation(self):
+        self.set_voltage(0)
 
-    @classmethod
-    def start_agitation(cls, exp_time=2):
-        cls.setVoltage1(Motor1.calc_voltage(exp_time))
-        cls.setVoltage2(Motor2.calc_voltage(exp_time*0.9))
+    def set_voltage(self, voltage):
+        self.set_voltage1(voltage)
+        self.set_voltage2(voltage)
 
-    @classmethod
-    def stop_agitation(cls):
-        cls.setVoltage(0)
-
-    @classmethod
-    def set_voltage(cls, voltage):
-        cls.setVoltage1(voltage)
-        cls.setVoltage2(voltage)
-
-    @classmethod
-    def set_voltage1(cls, voltage):
-        battery_voltage = cls.battery_voltage
+    def set_voltage1(self, voltage):
+        battery_voltage = self.battery_voltage
         if abs(voltage) > battery_voltage:
             voltage = np.sign(voltage) * battery_voltage
         if voltage >= 0:
-            cls._rc.ForwardM1(int(voltage/battery_voltage*127))
+            self._rc.ForwardM1(int(voltage/battery_voltage*127))
         else:
-            cls._rc.BackwardM1(int(-voltage/battery_voltage*127))
-        cls.voltage1 = voltage
+            self._rc.BackwardM1(int(-voltage/battery_voltage*127))
+        self.voltage1 = voltage
 
-    @classmethod
-    def set_voltage2(cls, voltage):
-        battery_voltage = cls.battery_voltage
+    def set_voltage2(self, voltage):
+        battery_voltage = self.battery_voltage
         if abs(voltage) > battery_voltage:
             voltage = np.sign(voltage) * battery_voltage
         if voltage >= 0:
-            cls._rc.ForwardM2(int(voltage/battery_voltage*127))
+            self._rc.ForwardM2(int(voltage/battery_voltage*127))
         else:
-            cls._rc.BackwardM2(int(-voltage/battery_voltage*127))
-        cls.voltage2 = voltage
+            self._rc.BackwardM2(int(-voltage/battery_voltage*127))
+        self.voltage2 = voltage
 
-    @property
-    @classmethod
-    def battery_voltage(cls):
-        return cls._rc.ReadMainBatteryVoltage()[1] / 10
+    def get_battery_voltage(self):
+        return self._rc.ReadMainBatteryVoltage()[1] / 10
 
-    @classmethod
-    def get_max_voltage(cls):
-        return cls._rc.ReadMinMaxMainVoltages()[2] / 10
+    battery_voltage = property(get_battery_voltage)
 
-    @classmethod
-    def set_max_voltage(cls, voltage):
-        cls._rc.SetMainVoltages(int(self.min_voltage*10), int(voltage*10))
+    def get_max_voltage(self):
+        return self._rc.ReadMinMaxMainVoltages()[2] / 10
+
+    def set_max_voltage(self, voltage):
+        self._rc.SetMainVoltages(int(self.min_voltage*10), int(voltage*10))
 
     max_voltage = property(get_max_voltage, set_max_voltage)
 
-    @classmethod
-    def get_min_voltage(cls):
-        return cls._rc.ReadMinMaxMainVoltages()[1] / 10
+    def get_min_voltage(self):
+        return self._rc.ReadMinMaxMainVoltages()[1] / 10
 
-    @classmethod
-    def set_min_voltage(cls, voltage):
-        cls._rc.SetMainVoltages(int(voltage*10), int(self.max_voltage*10))
+    def set_min_voltage(self, voltage):
+        self._rc.SetMainVoltages(int(voltage*10), int(self.max_voltage*10))
 
     min_voltage = property(get_min_voltage, set_min_voltage)
 
-    @property
-    @classmethod
-    def current1(cls):
-        return cls._rc.ReadCurrents()[1]/100
+    def get_current1(self):
+        return self._rc.ReadCurrents()[1]/100
 
-    @property
-    @classmethod
-    def current2(cls):
-        return cls._rc.ReadCurrents()[2]/100
+    current1 = property(get_current1)
 
-    @property
-    @classmethod
-    def max_current1(cls):
-        return cls._rc.ReadM1MaxCurrent()[1]/100
+    def get_current2(self):
+        return self._rc.ReadCurrents()[2]/100
 
-    @max_current1.setter
-    @classmethod
-    def max_current1(cls, current):
-        cls._rc.SetM1MaxCurrent(current)
+    current2 = property(get_current2)
 
-    @property
-    @classmethod
-    def max_current2(cls):
-        return cls._rc.ReadM2MaxCurrent()[1]/100
+    def get_max_current1(self):
+        return self._rc.ReadM1MaxCurrent()[1]/100
 
-    @max_current2.setter
-    @classmethod
-    def max_current2(cls, current):
-        cls._rc.SetM2MaxCurrent(current)
+    def set_max_current1(self, current):
+        self._rc.SetM1MaxCurrent(current)
+
+    max_current1 = property(get_max_current1, set_max_current1)
+
+    def get_max_current2(self):
+        return self._rc.ReadM2MaxCurrent()[1]/100
+
+    def set_max_current2(self, current):
+        self._rc.SetM2MaxCurrent(current)
+
+    max_current2 = property(get_max_current2, set_max_current2)
 
 class Motor:
     """
@@ -135,15 +113,15 @@ class Motor:
     min_voltage = 0.0
     
     @classmethod
-    def calc_voltage(cls, exp_time=2.0):
+    def calc_voltage(cls, battery_voltage, exp_time=2.0):
         """
         Calculate the voltage for the motor given an exposure time in seconds
         """
         if exp_time <= 0:
             return cls.calc_voltage(2.0)
-        voltage = cls.slope / exp_time + cls.intercept
-        if voltage > Agitator.battery_voltage:
-            return Agitator.battery_voltage
+        voltage = cls.slope / (exp_time/10.0) + cls.intercept
+        if voltage > battery_voltage:
+            return battery_voltage
         elif voltage < cls.min_voltage:
             return cls.min_voltage
         return voltage

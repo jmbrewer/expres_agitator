@@ -1025,7 +1025,7 @@ class Roboclaw:
         return self._read1(self.Cmd.GETPWMMODE)
 
     def Open(self):
-        self._comport = serial.Serial(comport=self.comport,
+        self._comport = serial.Serial(port=self.comport,
                 baudrate=self.rate, timeout=self.timeout,
                 inter_byte_timeout=self.inter_byte_timeout)
         self._open = True
