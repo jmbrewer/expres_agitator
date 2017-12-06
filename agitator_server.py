@@ -1,6 +1,7 @@
 from xmlrpc.server import SimpleXMLRPCServer
-import json
 from expres_agitator import Agitator
+
+
 
 class AgitatorRPCServer(SimpleXMLRPCServer):
 
