@@ -60,7 +60,7 @@ if __name__ == '__main__':
     if args.type.lower() == 'socket':
         print('SOCKET!')
     elif args.type.lower() == 'rpc':
-        with AgitatorRPCServer((args.host, args.port), allow_none=True) as server:
+        with AgitatorRPCServer((args.host, args.port), comport=args.comport, allow_none=True) as server:
             print('Starting server on http://{}:{}'.format(args.host, args.port))
             try:
                 server.serve_forever()
