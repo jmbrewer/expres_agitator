@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     parser = ArgumentParser(description='Start a server for the agitator')
     parser.add_argument('--host', default='localhost')
-    parser.add_argument('-p', '--port', default=5000)
+    parser.add_argument('-p', '--port', type=int, default=5000)
     parser.add_argument('-c', '--comport', default=None)
     args = parser.parse_args()
 
