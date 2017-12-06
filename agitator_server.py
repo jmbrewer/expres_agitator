@@ -49,7 +49,7 @@ if __name__ == '__main__':
                 agitator = Agitator(port.device)
                 del agitator
                 print('Success!')
-                args.comport = port
+                args.comport = port.device
                 break
             except (OSError, serial.SerialException):
                 print('Port failed...')
