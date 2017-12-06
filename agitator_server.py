@@ -44,16 +44,19 @@ if __name__ == '__main__':
     if args.comport is None:
         for port in serial.tools.list_ports.comports():
             try:
-                agitator = Agitator(port)
+                print('No COM Port listed')
+                print('Trying port {}'.format(port))
+                agitator = Agitator(port.device)
                 del agitator
+                print('Success!')
                 args.comport = port
                 break
             except (OSError, serial.SerialException):
-                pass
+                print('Port failed...')
         else:
             print('Could not find Agitator COM Port. Exiting...')
             sys.exit(0)
-    
+
     if args.type.lower() == 'socket':
         print('SOCKET!')
     elif args.type.lower() == 'rpc':
