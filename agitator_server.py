@@ -1,14 +1,20 @@
 from xmlrpc.server import SimpleXMLRPCServer
 from expres_agitator import Agitator
 
+class AgitatorProxy:
 
+    def __init__(self, comport):
+        self.agitator = Agitator(comport)
+
+    def get_agitator(self):
+        return self.agitator
 
 class AgitatorRPCServer(SimpleXMLRPCServer):
 
     def __init__(self, *args, comport='COM5', **kwargs):
         super().__init__(*args, **kwargs)
-        self.agitator = Agitator(comport)
-        self.register_instance(self.agitator)
+        self.agitator_proxy = AgitatorProxy(comport)
+        self.register_instance(self.agitator_proxy)
 
 if __name__ == '__main__':
     import sys
