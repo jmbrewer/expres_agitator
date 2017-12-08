@@ -1,7 +1,8 @@
-from jsonrpclib.SimpleJSONRPCServer import SimpleJSONRPCServer
+# from jsonrpclib.SimpleJSONRPCServer import SimpleJSONRPCServer as JSONRPCServer
+from jsonrpcserver.methods import Methods as JSONRPCServer
 from expres_agitator import Agitator
 
-class AgitatorServer(SimpleJSONRPCServer):
+class AgitatorServer(JSONRPCServer):
     """
         Extension of builtin Python XMLRPC Server that registers an instance
         of the Agitator class (with the given COM port) at the given host and
