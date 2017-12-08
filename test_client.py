@@ -1,6 +1,6 @@
-from xmlrpc.client import ServerProxy
+from jsonrpclib import Server
 
-class RPCClient(ServerProxy):
+class RPCServer(Server):
     """
         Wrapper for ServerProxy that allow instantiation with only the host
         name and port value.
@@ -19,8 +19,8 @@ if __name__ == '__main__':
     parser.add_argument('-t', '--time', type=float, default=60)
     args = parser.parse_args()
 
-    agitator = RPCClient(args.host, args.port)
+    agitator = RPCServer(args.host, args.port)
     agitator.start_agitation(args.time)
-    sleep(time)
+    sleep(args.time)
     agitator.stop_agitation()
 

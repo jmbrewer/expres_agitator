@@ -1,7 +1,7 @@
-from xmlrpc.server import SimpleXMLRPCServer
+from jsonrpclib.SimpleJSONRPCServer import SimpleJSONRPCServer
 from expres_agitator import Agitator
 
-class AgitatorRPCServer(SimpleXMLRPCServer):
+class AgitatorServer(SimpleJSONRPCServer):
     """
         Extension of builtin Python XMLRPC Server that registers an instance
         of the Agitator class (with the given COM port) at the given host and
@@ -40,9 +40,9 @@ if __name__ == '__main__':
             print('Could not find Agitator COM Port. Exiting...')
             sys.exit(0)
 
-    server = AgitatorRPCServer(args.host, args.port,
-                               comport=args.comport,
-                               allow_none=True)
+    server = AgitatorServer(args.host, args.port,
+                            comport=args.comport,
+                            allow_none=True)
     print('Starting server on http://{}:{}'.format(args.host, args.port))
     try:
         server.serve_forever()
