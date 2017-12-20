@@ -27,8 +27,8 @@ class Agitator:
         self.stop_agitation()
 
     def start_agitation(self, exp_time=2):
-        self.set_voltage1(Motor1.calc_voltage(self.battery_voltage, exp_time))
-        self.set_voltage2(Motor2.calc_voltage(self.battery_voltage, exp_time*0.9))
+        self.set_voltage1(Motor.calc_voltage(self.battery_voltage, exp_time))
+        self.set_voltage2(Motor.calc_voltage(self.battery_voltage, exp_time*0.9))
 
     def stop_agitation(self):
         self.set_voltage(0)
@@ -119,9 +119,9 @@ class Motor:
     Class that determines a voltage for a motor given the slope and intercept
     of the voltage vs. frequency regression
     """
-    slope = 0.0
-    intercept = 0.0
-    min_voltage = 0.0
+    slope = 19.7
+    intercept = 3.1
+    min_voltage = 10.0
     
     @classmethod
     def calc_voltage(cls, battery_voltage, exp_time=2.0):
@@ -136,13 +136,3 @@ class Motor:
         elif voltage < cls.min_voltage:
             return cls.min_voltage
         return voltage
-
-class Motor1(Motor):
-    slope = 19.7
-    intercept = 3.1
-    min_voltage = 10.0
-
-class Motor2(Motor):
-    slope = 27.1
-    intercept = 1.7
-    min_voltage = 5.0
