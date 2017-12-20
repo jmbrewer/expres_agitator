@@ -119,9 +119,9 @@ class Motor:
     Class that determines a voltage for a motor given the slope and intercept
     of the voltage vs. frequency regression
     """
-    slope = 19.7
-    intercept = 3.1
-    min_voltage = 10.0
+    slope = 29.0
+    intercept = 3.0
+    min_voltage = 5.0
     
     @classmethod
     def calc_voltage(cls, battery_voltage, exp_time=2.0):
