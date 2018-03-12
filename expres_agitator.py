@@ -26,7 +26,7 @@ class Agitator:
                 inter_byte_timeout=__DEFAULT_INTER_BYTE_TIMEOUT__)
         self.stop_agitation()
 
-    def start_agitation(self, exp_time=2.0, rot1=10.0, rot2=9.0):
+    def start_agitation(self, exp_time=60.0, rot1=10.0, rot2=9.0):
         self.set_voltage1(Motor1.calc_voltage(self.battery_voltage, exp_time, rot1))
         self.set_voltage2(Motor2.calc_voltage(self.battery_voltage, exp_time, rot2))
 
@@ -127,7 +127,7 @@ class Motor:
     min_voltage = 5.0
     
     @classmethod
-    def calc_voltage(cls, battery_voltage, exp_time=2.0, n_rotations=10.0):
+    def calc_voltage(cls, battery_voltage, exp_time=60.0, n_rotations=10.0):
         """
         Calculate the voltage for the motor given an exposure time in seconds
         """
