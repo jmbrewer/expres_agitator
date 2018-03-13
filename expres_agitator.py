@@ -8,7 +8,7 @@
 import numpy as np
 from roboclaw import Roboclaw
 
-__DEFAULT_PORT__ = 'COM5'
+__DEFAULT_PORT__ = 'COM13'
 __DEFAULT_BAUD_RATE__ = 38400
 __DEFAULT_ADDR__ = 0x80
 __DEFAULT_TIMEOUT__ = 3.0
@@ -24,7 +24,7 @@ class Agitator:
                 timeout=__DEFAULT_TIMEOUT__,
                 retries=__DEFAULT_RETRIES__,
                 inter_byte_timeout=__DEFAULT_INTER_BYTE_TIMEOUT__)
-        self.stop_agitation()
+        # self.stop_agitation()
 
     def start_agitation(self, exp_time=2.0, rot1=10.0, rot2=9.0):
         self.set_voltage1(Motor1.calc_voltage(self.battery_voltage, exp_time, rot1))
