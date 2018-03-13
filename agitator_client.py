@@ -20,7 +20,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     agitator = AgitatorServer(args.host, args.port)
-    agitator.start_agitation(args.time)
+    agitator.start(args.time)
     sleep(args.time)
-    agitator.stop_agitation()
-
+    agitator.stop()
