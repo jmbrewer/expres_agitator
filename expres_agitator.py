@@ -52,7 +52,8 @@ class Agitator(object):
             self.stop_event.clear()
 
         ag_thread = Thread(threaded_agitation,
-                           args=(exp_time, timeout, **kwargs))
+                           args=(exp_time, timeout,),
+                           kwargs=**kwargs)
         ag_thread.start()
 
     def stop(self):
@@ -193,4 +194,4 @@ if __name__ == '__main__':
         timeout = input('Timeout (s): ')
         if timeout is 'exit': break
 
-        ag.start(float(exp_time), float(timeout))
+        ag.start(float(exp_time), float(timeout), verbose=False)
