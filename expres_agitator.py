@@ -53,7 +53,7 @@ class Agitator(object):
 
         ag_thread = Thread(threaded_agitation,
                            args=(exp_time, timeout,),
-                           kwargs=**kwargs)
+                           kwargs=kwargs)
         ag_thread.start()
 
     def stop(self):
