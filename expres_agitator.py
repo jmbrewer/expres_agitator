@@ -51,8 +51,8 @@ class Agitator(object):
             self.stop_agitation()
             self.stop_event.clear()
 
-        ag_thread = Thread(threaded_agitation,
-                           args=(exp_time, timeout,),
+        ag_thread = Thread(target=threaded_agitation,
+                           args=(exp_time, timeout),
                            kwargs=kwargs)
         ag_thread.start()
 
