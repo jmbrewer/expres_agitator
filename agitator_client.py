@@ -5,9 +5,9 @@ class AgitatorServer(ServerProxy):
         Wrapper for ServerProxy that allow instantiation with only the host
         name and port value.
     """
-    def __init__(self, host, port):
+    def __init__(self, host, port, **kwargs):
         self.url = 'http://{}:{}'.format(host, port)
-        super().__init__(self.url)
+        super().__init__(self.url, **kwargs)
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -20,7 +20,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     agitator = AgitatorServer(args.host, args.port)
-    agitator.start_agitation(args.time)
+    agitator.start(args.time)
     sleep(args.time)
-    agitator.stop_agitation()
-
+    agitator.stop()
