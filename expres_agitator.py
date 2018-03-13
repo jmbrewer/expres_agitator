@@ -26,12 +26,14 @@ class Agitator(object):
                 timeout=__DEFAULT_TIMEOUT__,
                 retries=__DEFAULT_RETRIES__,
                 inter_byte_timeout=__DEFAULT_INTER_BYTE_TIMEOUT__)
+        self.thread = None
         self.stop_event = Event()
         self.stop()
 
     def __del__(self):
+        print('Deleting Agitator object...')
         self.stop()
-        self.stop_agitation()
+        self.stop_agitation(verbose=False)
 
     def start(self, exp_time=60.0, timeout=600, verbose=True, **kwargs):
         '''
@@ -41,36 +43,47 @@ class Agitator(object):
         self.stop() # To close any previously opened threads
 
         def threaded_agitation(exp_time, timeout, **kwargs):
+            '''Nested function to allowing stop event'''
             self.start_agitation(exp_time, **kwargs)
             t = 0
             while not self.stop_event.is_set() and t < timeout:
                 sleep(1)
                 t += 1
                 if verbose:
-                    print('Agitator running for {} of {} seconds'.format(t, timeout))
+                    print('{}/{}s for {}s exposure'.format(t, timeout, exp_time))
+                    print('V1: {}, V2: {}'.format(self.voltage1, self.voltage2))
+                    print('I1: {}, I2: {}'.format(self.current1, self.current2))
             self.stop_agitation()
-            self.stop_event.clear()
+            self.stop_event.clear() # Allow for future agitation events
 
-        ag_thread = Thread(target=threaded_agitation,
-                           args=(exp_time, timeout),
-                           kwargs=kwargs)
-        ag_thread.start()
+        self.thread = Thread(target=threaded_agitation,
+                             args=(exp_time, timeout),
+                             kwargs=kwargs)
+        self.thread.start()
 
     def stop(self):
-        self.stop_event.set()
-        sleep(1)
-        self.stop_event.clear()
+        '''Stop the agitation thread if it is running'''
+        if self.thread is not None and self.thread.is_alive():
+            self.stop_event.set()
+            self.thread.join()
+        else: # As a backup in case something is going wrong
+            self.stop_agitation()
 
-    def start_agitation(self, exp_time=60.0, rot1=10.0, rot2=9.0):
-        print('Starting agitation for {}s exposure'.format(exp_time))
+    def start_agitation(self, exp_time=60.0, rot1=10.0, rot2=9.0, verbose=True):
+        '''Set the motor voltages for the given number of rotations in exp_time'''
+        if verbose:
+            print('Starting agitation for {}s exposure...'.format(exp_time))
         self.set_voltage1(Motor1.calc_voltage(self.battery_voltage, exp_time, rot1))
         self.set_voltage2(Motor2.calc_voltage(self.battery_voltage, exp_time, rot2))
 
-    def stop_agitation(self):
-        print('Stopping agitation')
+    def stop_agitation(self, verbose=True):
+        '''Set both motor voltages to 0'''
+        if verbose:
+            print('Stopping agitation...')
         self.set_voltage(0)
 
     def set_voltage(self, voltage):
+        '''Set both motor voltages to the given voltage'''
         self.set_voltage1(voltage)
         self.set_voltage2(voltage)
 
@@ -156,6 +169,7 @@ class Motor:
     Class that determines a voltage for a motor given the slope and intercept
     of the voltage vs. frequency regression
     """
+    # Approximately the average parameters of Motor 1 and Motor 2
     slope = 28.0
     intercept = 1.8
     min_voltage = 5.0
@@ -175,10 +189,12 @@ class Motor:
         return voltage
 
 class Motor1(Motor):
+    '''Subclass of Motor with the parameters of Motor 1'''
     slope = 27.81
     intercept = 2.06
 
 class Motor2(Motor):
+    '''Subclass of Motor with the parameters of Motor 2'''
     slope = 28.49
     intercept = 1.58
 
