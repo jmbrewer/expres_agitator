@@ -26,8 +26,8 @@ class Agitator(object):
                 timeout=__DEFAULT_TIMEOUT__,
                 retries=__DEFAULT_RETRIES__,
                 inter_byte_timeout=__DEFAULT_INTER_BYTE_TIMEOUT__)
-        self.stop()
         self.stop_event = Event()
+        self.stop()
 
     def __del__(self):
         self.stop()
@@ -58,6 +58,8 @@ class Agitator(object):
 
     def stop(self):
         self.stop_event.set()
+        sleep(1)
+        self.stop_event.clear()
 
     def start_agitation(self, exp_time=60.0, rot1=10.0, rot2=9.0):
         print('Starting agitation for {}s exposure'.format(exp_time))
