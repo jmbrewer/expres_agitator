@@ -31,8 +31,9 @@ class Agitator(object):
 
     def __del__(self):
         self.stop()
+        self.stop_agitation()
 
-    def start(self, exp_time=60.0, timeout=600, **kwargs):
+    def start(self, exp_time=60.0, timeout=600, verbose=True, **kwargs):
         '''
         Start a thread that starts agitation and stops if a stop event is
         called or if a timeout is reached
@@ -45,7 +46,8 @@ class Agitator(object):
             while not self.stop_event.is_set() and t < timeout:
                 sleep(1)
                 t += 1
-                # print('Agitator running for {} of {} seconds'.format(t, timeout))
+                if verbose:
+                    print('Agitator running for {} of {} seconds'.format(t, timeout))
             self.stop_agitation()
             self.stop_event.clear()
 
