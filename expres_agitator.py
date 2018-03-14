@@ -210,13 +210,14 @@ if __name__ == '__main__':
     ag = Agitator(com_port)
 
     while True:
-        exp_time = input('Exposure time (s): ')
-        timeout = input('Timeout (s): ')
-
         try:
-            ag.start(float(exp_time), float(timeout), verbose=False)
-            sleep(2)
+            exp_time = float(input('Exposure time (s): '))
+            timeout = float(input('Timeout (s): '))
         except ValueError: # catch when exp_time or timeout are strings
+            print('String was input. Exiting...')
             break
+
+        ag.start(float(exp_time), float(timeout), verbose=False)
+        sleep(2)
 
     ag.stop()
