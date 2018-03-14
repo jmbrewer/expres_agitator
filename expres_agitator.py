@@ -211,12 +211,12 @@ if __name__ == '__main__':
 
     while True:
         exp_time = input('Exposure time (s): ')
-        if exp_time is 'exit': break
-
         timeout = input('Timeout (s): ')
-        if timeout is 'exit': break
 
-        ag.start(float(exp_time), float(timeout), verbose=False)
-        sleep(2)
+        try:
+            ag.start(float(exp_time), float(timeout), verbose=False)
+            sleep(2)
+        except ValueError: # catch when exp_time or timeout are strings
+            break
 
     ag.stop()
