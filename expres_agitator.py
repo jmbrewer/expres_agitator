@@ -72,6 +72,9 @@ class Agitator(object):
 
     def start_agitation(self, exp_time=60.0, rot1=10.0, rot2=9.0, verbose=True):
         '''Set the motor voltages for the given number of rotations in exp_time'''
+        if exp_time <= 0:
+            self.stop()
+            return
         if verbose:
             print('Starting agitation for {}s exposure...'.format(exp_time))
         self.set_voltage1(Motor1.calc_voltage(self.battery_voltage, exp_time, rot1))
@@ -214,3 +217,6 @@ if __name__ == '__main__':
         if timeout is 'exit': break
 
         ag.start(float(exp_time), float(timeout), verbose=False)
+        sleep(2)
+
+    ag.stop()
