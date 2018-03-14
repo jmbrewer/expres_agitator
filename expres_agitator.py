@@ -82,9 +82,12 @@ class Agitator(object):
 
     def stop_agitation(self, verbose=True):
         '''Set both motor voltages to 0'''
-        if verbose:
-            print('Stopping agitation...')
-        self.set_voltage(0)
+        if self.voltage1 > 0 or self.voltage2 > 0:
+            if verbose:
+                print('Stopping agitation...')
+            self.set_voltage(0)
+        else:
+            print('Agitator already stopped')
 
     def set_voltage(self, voltage):
         '''Set both motor voltages to the given voltage'''
@@ -212,12 +215,11 @@ if __name__ == '__main__':
     while True:
         try:
             exp_time = float(input('Exposure time (s): '))
-            timeout = float(input('Timeout (s): '))
-        except ValueError: # catch when exp_time or timeout are strings
+        except ValueError: # catch when exp_time is a string
             print('String was input. Exiting...')
             break
 
-        ag.start(float(exp_time), float(timeout), verbose=False)
+        ag.start_agitation(float(exp_time))
         sleep(2)
 
     ag.stop()
