@@ -51,7 +51,6 @@ class Agitator(object):
                 t += 1
                 if verbose:
                     print('{}/{}s for {}s exposure'.format(t, timeout, exp_time))
-                    print('V1: {}, V2: {}'.format(self.voltage1, self.voltage2))
                     print('I1: {}, I2: {}'.format(self.current1, self.current2))
             self.stop_agitation()
             self.stop_event.clear() # Allow for future agitation events
@@ -64,8 +63,10 @@ class Agitator(object):
     def stop(self):
         '''Stop the agitation thread if it is running'''
         if self.thread is not None and self.thread.is_alive():
-            self.stop_event.set()
-            self.thread.join()
+            while self.voltage1 > 0 or self.voltage2 > 0:
+                print('Attempting to stop agitation...')
+                self.stop_event.set()
+                self.thread.join(2)
         else: # As a backup in case something is going wrong
             self.stop_agitation()
 
