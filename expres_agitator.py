@@ -28,7 +28,7 @@ class Agitator(object):
                 inter_byte_timeout=__DEFAULT_INTER_BYTE_TIMEOUT__)
         self.thread = None
         self.stop_event = Event()
-        self.stop()
+        self.stop_agitation(verbose=False) # Just to make sure
 
     def __del__(self):
         print('Deleting Agitator object...')
@@ -40,7 +40,7 @@ class Agitator(object):
         Start a thread that starts agitation and stops if a stop event is
         called or if a timeout is reached
         '''
-        self.stop() # To close any previously opened threads
+        self.stop(verbose) # To close any previously opened threads
 
         def threaded_agitation(exp_time, timeout, **kwargs):
             '''Nested function to allowing stop event'''
@@ -60,15 +60,16 @@ class Agitator(object):
                              kwargs=kwargs)
         self.thread.start()
 
-    def stop(self):
+    def stop(self, verbose=True):
         '''Stop the agitation thread if it is running'''
         if self.thread is not None and self.thread.is_alive():
             while self.voltage1 > 0 or self.voltage2 > 0:
-                print('Attempting to stop agitation...')
+                if verbose:
+                    print('Attempting to stop agitation...')
                 self.stop_event.set()
                 self.thread.join(2)
         else: # As a backup in case something is going wrong
-            self.stop_agitation()
+            self.stop_agitation(verbose)
 
     def start_agitation(self, exp_time=60.0, rot1=10.0, rot2=9.0, verbose=True):
         '''Set the motor voltages for the given number of rotations in exp_time'''
@@ -82,12 +83,9 @@ class Agitator(object):
 
     def stop_agitation(self, verbose=True):
         '''Set both motor voltages to 0'''
-        if self.voltage1 > 0 or self.voltage2 > 0:
-            if verbose:
-                print('Stopping agitation...')
-            self.set_voltage(0)
-        else:
-            print('Agitator already stopped')
+        if verbose:
+            print('Stopping agitation...')
+        self.set_voltage(0)
 
     def set_voltage(self, voltage):
         '''Set both motor voltages to the given voltage'''
