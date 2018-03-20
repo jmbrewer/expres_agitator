@@ -48,7 +48,7 @@ class Agitator(object):
                 inter_byte_timeout=__DEFAULT_INTER_BYTE_TIMEOUT__)
         self.thread = None # In case stop() is called before a thread is created
         self.stop_event = Event() # Used for stopping threads
-        self.stop_agitation(verbose=False) # Just to make sure
+        self.stop_agitation() # Just to make sure
 
         # Create a logger for the agitator
         self.logger = logging.getLogger('expres_agitator')
