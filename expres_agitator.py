@@ -83,7 +83,7 @@ class Agitator(object):
         self.stop_agitation()
         self.stop_event.clear() # Allow for future agitation events
 
-    def start(self, exp_time=60.0, timeout=None, verbose=True, **kwargs):
+    def start(self, exp_time=60.0, timeout=None, **kwargs):
         '''
         Start a thread that starts agitation and stops if a stop event is
         called or if the timeout is reached
@@ -127,7 +127,7 @@ class Agitator(object):
         self.set_voltage1(Motor1.calc_voltage(self.battery_voltage, freq1))
         self.set_voltage2(Motor2.calc_voltage(self.battery_voltage, freq2))
 
-    def stop_agitation(self, verbose=True):
+    def stop_agitation(self):
         '''Set both motor voltages to 0'''
         self.logger.info('Stopping agitation')
         self.set_voltage(0)
