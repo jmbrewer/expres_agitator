@@ -127,9 +127,9 @@ class Agitator(object):
             self.logger.info('Non-positive rotation number given to agitator object')
             self.stop_agitation()
             return
-            
-        freq1 = int(rot)/exp_time
-        freq2 = int(0.9*int(rot))/exp_time
+
+        freq1 = rot/exp_time
+        freq2 = 0.9*rot/exp_time
 
         self.logger.info('Starting agitation at approximately {} Hz'.format(freq1))
         self.set_voltage1(Motor1.calc_voltage(self.battery_voltage, freq1))
