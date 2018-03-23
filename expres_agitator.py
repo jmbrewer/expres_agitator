@@ -49,7 +49,7 @@ class Agitator(object):
 
         # Create a logger for the agitator
         self.logger = logging.getLogger('expres_agitator')
-        logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(logging.DEBUG)
         # Create file handler to log all messages
         fh = logging.FileHandler('agitator.log')
         fh.setLevel(logging.DEBUG)
@@ -58,7 +58,7 @@ class Agitator(object):
         ch = logging.StreamHandler()
         ch.setLevel(logging.INFO)
         self.logger.addHandler(ch)
-        
+
         self.thread = None # In case stop() is called before a thread is created
         self.stop_event = Event() # Used for stopping threads
         self.stop_agitation() # Just to make sure
