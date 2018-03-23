@@ -125,7 +125,7 @@ class Agitator(object):
         freq1 = rot/exp_time
         freq2 = 0.9*freq1
 
-        self.logger.info('Starting agitation at ~{} Hz'.format(freq1))
+        self.logger.info('Starting agitation at approximately {} Hz'.format(freq1))
         self.set_voltage1(Motor1.calc_voltage(self.battery_voltage, freq1))
         self.set_voltage2(Motor2.calc_voltage(self.battery_voltage, freq2))
 
@@ -282,11 +282,12 @@ if __name__ == '__main__':
     while True:
         try:
             exp_time = float(input('Exposure time (s): '))
+            timeout = float(input('Timeout (s): '))
         except ValueError: # catch when exp_time is not a number
             print('Number was not input. Exiting...')
             break
 
-        ag.start_agitation(exp_time)
+        ag.start_agitation(exp_time=exp_time, timeout=timeout)
         sleep(2)
 
     ag.stop()
