@@ -57,9 +57,9 @@ class Agitator(object):
         fh = logging.FileHandler('agitator.log')
         fh.setLevel(logging.DEBUG)
         self.logger.addHandler(fh)
-        # Create console handler to log all messages
+        # Create console handler to log info messages
         ch = logging.StreamHandler()
-        ch.setLevel(logging.DEBUG)
+        ch.setLevel(logging.INFO)
         self.logger.addHandler(ch)
 
     def __del__(self):
@@ -73,13 +73,14 @@ class Agitator(object):
 
     def threaded_agitation(self, exp_time, timeout, **kwargs):
         '''Threadable function allowing stop event'''
+        self.logger.info('Starting agitator thread for {}s exposure with {}s timeout'.format(exp_time, timeout))
         self.start_agitation(exp_time, **kwargs)
         t = 0
         while not self.stop_event.is_set() and t < timeout:
             sleep(1)
             t += 1
-            self.logger.info('{}/{}s for {}s exposure'.format(t, timeout, exp_time))
-            self.logger.info('I1: {}, I2: {}'.format(self.current1, self.current2))
+            self.logger.debug('{}/{}s for {}s exposure'.format(t, timeout, exp_time))
+            self.logger.debug('I1: {}, I2: {}'.format(self.current1, self.current2))
         self.stop_agitation()
         self.stop_event.clear() # Allow for future agitation events
 
@@ -110,20 +111,19 @@ class Agitator(object):
             self.logger.error('Something went wrong when trying to stop threaded agitation. Forcing agitator to stop.')
             self.stop_agitation()
 
-    def start_agitation(self, exp_time=60.0, rot1=None, rot2=None):
+    def start_agitation(self, exp_time=60.0, rot=None):
         '''Set the motor voltages for the given number of rotations in exp_time'''
         if exp_time <= 0:
             self.logger.info('Exposure time set to non-positive value. Stopping agitator.')
             self.stop_agitation()
             return
 
-        if rot1 is None or rot2 is None:
-            rot1 = 0.5 * exp_time
-            rot2 = 0.45 * exp_time
-        freq1 = rot1/exp_time
-        freq2 = rot2/exp_time
+        if rot is None:
+            rot = 0.5 * exp_time
+        freq1 = rot/exp_time
+        freq2 = 0.9*freq1
 
-        self.logger.info('Starting agitation for {}s exposure...'.format(exp_time))
+        self.logger.info('Starting agitation at ~{} Hz'.format(freq1))
         self.set_voltage1(Motor1.calc_voltage(self.battery_voltage, freq1))
         self.set_voltage2(Motor2.calc_voltage(self.battery_voltage, freq2))
 
@@ -234,9 +234,11 @@ class Motor:
     @classmethod
     def calc_voltage(cls, battery_voltage, freq=0.5):
         '''Calculate the voltage for the motor given a number of rotations per second'''
-        if freq >= cls.max_freq:
+        if freq > cls.max_freq:
             freq = cls.max_freq
+
         voltage = cls.slope * freq + cls.intercept
+
         if voltage > battery_voltage:
             return battery_voltage
         elif voltage < cls.min_voltage:
@@ -247,11 +249,13 @@ class Motor1(Motor):
     '''Subclass of Motor with the parameters of Motor 1'''
     slope = 27.81
     intercept = 2.06
+    max_freq = 0.5
 
 class Motor2(Motor):
     '''Subclass of Motor with the parameters of Motor 2'''
     slope = 28.49
     intercept = 1.58
+    max_freq = 0.45
 
 if __name__ == '__main__':
     '''Script to allow terminal control of the motors
@@ -276,11 +280,11 @@ if __name__ == '__main__':
     while True:
         try:
             exp_time = float(input('Exposure time (s): '))
-        except ValueError: # catch when exp_time is a string
+        except ValueError: # catch when exp_time is not a number
             print('Number was not input. Exiting...')
             break
 
-        ag.start_agitation(float(exp_time))
+        ag.start_agitation(exp_time)
         sleep(2)
 
     ag.stop()
