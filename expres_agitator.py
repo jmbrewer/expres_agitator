@@ -69,7 +69,7 @@ class Agitator(object):
         When the object is deleted, make sure all threads are closed and
         agitator is stopped.
         '''
-        self.logger.info('Deleting Agitator object')
+        self.logger.debug('Deleting Agitator object')
         self.stop()
         self.stop_agitation()
 
@@ -120,15 +120,16 @@ class Agitator(object):
             self.stop_agitation()
             return
 
+        if rot is None:
+            rot = 0.5 * exp_time
+
         if rot <= 0:
             self.logger.info('Non-positive rotation number given to agitator object')
             self.stop_agitation()
             return
-
-        if rot is None:
-            rot = 0.5 * exp_time
-        freq1 = rot/exp_time
-        freq2 = 0.9*freq1
+            
+        freq1 = int(rot)/exp_time
+        freq2 = int(0.9*int(rot))/exp_time
 
         self.logger.info('Starting agitation at approximately {} Hz'.format(freq1))
         self.set_voltage1(Motor1.calc_voltage(self.battery_voltage, freq1))
