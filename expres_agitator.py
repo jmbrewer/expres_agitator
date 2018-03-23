@@ -115,8 +115,8 @@ class Agitator(object):
 
     def start_agitation(self, exp_time=60.0, rot=None):
         '''Set the motor voltages for the given number of rotations in exp_time'''
-        if exp_time <= 0:
-            self.logger.info('Exposure time set to non-positive value. Stopping agitator.')
+        if exp_time <= 0 or rot <= 0:
+            self.logger.info('Non-positive value input into agitator. Stopping agitator.')
             self.stop_agitation()
             return
 
