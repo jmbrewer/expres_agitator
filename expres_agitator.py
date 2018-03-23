@@ -46,9 +46,6 @@ class Agitator(object):
                 timeout=__DEFAULT_TIMEOUT__,
                 retries=__DEFAULT_RETRIES__,
                 inter_byte_timeout=__DEFAULT_INTER_BYTE_TIMEOUT__)
-        self.thread = None # In case stop() is called before a thread is created
-        self.stop_event = Event() # Used for stopping threads
-        self.stop_agitation() # Just to make sure
 
         # Create a logger for the agitator
         self.logger = logging.getLogger('expres_agitator')
@@ -61,6 +58,11 @@ class Agitator(object):
         ch = logging.StreamHandler()
         ch.setLevel(logging.INFO)
         self.logger.addHandler(ch)
+        
+        self.thread = None # In case stop() is called before a thread is created
+        self.stop_event = Event() # Used for stopping threads
+        self.stop_agitation() # Just to make sure
+
 
     def __del__(self):
         '''
