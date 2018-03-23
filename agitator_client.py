@@ -15,8 +15,8 @@ if __name__ == '__main__':
 
     parser = ArgumentParser(description='Start a client connection to the agitator')
     parser.add_argument('--host', default='localhost')
-    parser.add_argument('-p', '--port', type=int, default=5000)
-    parser.add_argument('-t', '--time', type=float, default=60)
+    parser.add_argument('-p', '--port', type=int, default=5001)
+    parser.add_argument('-t', '--time', type=float, default=10)
     args = parser.parse_args()
 
     agitator = AgitatorServer(args.host, args.port)
