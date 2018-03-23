@@ -281,13 +281,12 @@ if __name__ == '__main__':
 
     while True:
         try:
-            exp_time = float(input('Exposure time (s): '))
-            timeout = float(input('Timeout (s): '))
+            freq = float(input('Frequency (Hz): '))
         except ValueError: # catch when exp_time is not a number
             print('Number was not input. Exiting...')
             break
 
-        ag.start_agitation(exp_time=exp_time, timeout=timeout)
-        sleep(2)
+        ag.start_agitation(exp_time=60.0, rot=60.0*freq)
+        sleep(1)
 
-    ag.stop()
+    ag.stop_agitation()
