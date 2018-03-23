@@ -9,7 +9,7 @@ class AgitatorServer(RPCServer):
         of the Agitator class (with the given COM port) at the given host and
         port.
     """
-    def __init__(self, host, port, *args, comport='COM5', **kwargs):
+    def __init__(self, host, port, *args, comport='COM13', **kwargs):
         super().__init__((host, port), *args, **kwargs)
         agitator = Agitator(comport)
         self.register_instance(agitator)
