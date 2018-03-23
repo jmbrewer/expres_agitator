@@ -91,7 +91,7 @@ class Agitator(object):
         self.stop() # To close any previously opened threads
 
         if timeout is None: # Allow for some overlap time
-            timeout = exp_time + 60.0
+            timeout = exp_time + 10.0
 
         self.thread = Thread(target=self.threaded_agitation,
                              args=(exp_time, timeout),
@@ -107,14 +107,14 @@ class Agitator(object):
                 self.thread.join(2)
         if self.voltage1 > 0 or self.voltage2 > 0:
             # As a backup in case something went wrong
-            self.logger.error('Something went wrong when trying to stop threaded agitation')
+            self.logger.error('Something went wrong when trying to stop threaded agitation. Forcing agitator to stop.')
             self.stop_agitation()
 
     def start_agitation(self, exp_time=60.0, rot1=None, rot2=None):
         '''Set the motor voltages for the given number of rotations in exp_time'''
         if exp_time <= 0:
-            self.logger.info('Exposure time set to non-positive value')
-            self.stop()
+            self.logger.info('Exposure time set to non-positive value. Stopping agitator.')
+            self.stop_agitation()
             return
 
         if rot1 is None or rot2 is None:
@@ -228,13 +228,14 @@ class Motor:
     # Approximately the average parameters of Motor 1 and Motor 2
     slope = 28.0
     intercept = 1.8
+    max_freq = 0.5
     min_voltage = 5.0
     
     @classmethod
     def calc_voltage(cls, battery_voltage, freq=0.5):
         '''Calculate the voltage for the motor given a number of rotations per second'''
-        if freq >= 1.0:
-            freq = 1.0
+        if freq >= cls.max_freq:
+            freq = cls.max_freq
         voltage = cls.slope * freq + cls.intercept
         if voltage > battery_voltage:
             return battery_voltage
