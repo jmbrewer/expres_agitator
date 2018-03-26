@@ -29,27 +29,7 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--port', type=int, default=__DEFAULT_PORT__)
     parser.add_argument('-c', '--comport', default=__DEFAULT_COMPORT__)
     args = parser.parse_args()
-
-    # if args.comport is None:
-    #     print('No COM Port listed')
-    #     for port in serial.tools.list_ports.comports():
-    #         agitator = None
-    #         try:
-    #             print('Trying port {}.'.format(port.device), end=' ')
-    #             agitator = Agitator(port.device)
-    #             del agitator
-    #             print('Success!')
-    #             args.comport = port.device
-    #             break
-    #         except (OSError, serial.SerialException):
-    #             print('Serial connection failed...')
-    #             del agitator
-    #         except Exception as err:
-    #             print('Unexpected error while connecting: {}'.format(err))
-    #             del agitator
-    #     else:
-    #         print('Could not find Agitator COM Port. Exiting...')
-    #         sys.exit(0)
+    
     for _ in range(3):
         try:
             server = AgitatorServer(args.host, args.port,
