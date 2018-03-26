@@ -53,16 +53,20 @@ class Agitator(object):
         # Create file handler to log all messages
         fh = logging.FileHandler('agitator.log')
         fh.setLevel(logging.DEBUG)
-        self.logger.addHandler(fh)
         # Create console handler to log info messages
         ch = logging.StreamHandler()
         ch.setLevel(logging.INFO)
+        # create formatter and add it to the handlers
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        fh.setFormatter(formatter)
+        ch.setFormatter(formatter)
+        # add the handlers to the logger
+        self.logger.addHandler(fh)
         self.logger.addHandler(ch)
 
         self.thread = None # In case stop() is called before a thread is created
         self.stop_event = Event() # Used for stopping threads
         self.stop_agitation() # Just to make sure
-
 
     def __del__(self):
         '''
