@@ -76,6 +76,7 @@ class Agitator(object):
         self.logger.debug('Deleting Agitator object')
         self.stop()
         self.stop_agitation()
+        logging.shutdown()
 
     def threaded_agitation(self, exp_time, timeout, **kwargs):
         '''Threadable function allowing stop event'''
