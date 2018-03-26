@@ -1,6 +1,9 @@
 from xmlrpc.client import ServerProxy
 
-class AgitatorServer(ServerProxy):
+__DEFAULT_HOST__ = 'expres2.lowell.edu'
+__DEFAULT_PORT__ = 5001
+
+class AgitatorProxy(ServerProxy):
     """
         Wrapper for ServerProxy that allow instantiation with only the host
         name and port value.
@@ -14,12 +17,12 @@ if __name__ == '__main__':
     from time import sleep
 
     parser = ArgumentParser(description='Start a client connection to the agitator')
-    parser.add_argument('--host', default='localhost')
-    parser.add_argument('-p', '--port', type=int, default=5001)
+    parser.add_argument('--host', default=__DEFAULT_HOST__)
+    parser.add_argument('-p', '--port', type=int, default=__DEFAULT_PORT__)
     parser.add_argument('-t', '--time', type=float, default=10)
     args = parser.parse_args()
 
-    agitator = AgitatorServer(args.host, args.port)
+    agitator = AgitatorProxy(args.host, args.port)
     agitator.start(args.time)
     sleep(args.time)
     agitator.stop()
