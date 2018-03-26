@@ -86,8 +86,7 @@ class Agitator(object):
         while not self.stop_event.is_set() and t < timeout:
             sleep(1)
             t += 1
-            self.logger.debug('{}/{}s for {}s exposure'.format(t, timeout, exp_time))
-            self.logger.debug('I1: {}, I2: {}'.format(self.current1, self.current2))
+            self.logger.debug('{}/{}s for {}s exposure. I1: {}, I2: {}'.format(t, timeout, exp_time, self.current1, self.current2))
         self.stop_agitation()
         self.stop_event.clear() # Allow for future agitation events
 

@@ -16,6 +16,7 @@ class AgitatorServer(RPCServer):
     def __init__(self, host, port, *args, comport=__DEFAULT_COMPORT__, **kwargs):
         super().__init__((host, port), *args, **kwargs)
         agitator = Agitator(comport)
+        agitator.logger.info('Starting agitator server on http://{}:{}'.format(args.host, args.port))
         self.register_instance(agitator)
 
 if __name__ == '__main__':
@@ -43,7 +44,6 @@ if __name__ == '__main__':
         print('Maximum three connection tries exceeded. Exiting...')
         sys.exit(0)
 
-    print('Starting agitator server on http://{}:{}'.format(args.host, args.port))
     try:
         server.serve_forever()
     except KeyboardInterrupt:
