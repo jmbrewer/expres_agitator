@@ -134,8 +134,9 @@ class Agitator(object):
 
         freq1 = rot/exp_time
         freq2 = 0.9*rot/exp_time
+        self._freq = freq1
 
-        self.logger.info('Starting agitation at approximately {} Hz'.format(freq1))
+        self.logger.info('Starting agitation at approximately {} Hz'.format(self._freq))
         self.set_voltage1(Motor1.calc_voltage(self.battery_voltage, freq1))
         self.set_voltage2(Motor2.calc_voltage(self.battery_voltage, freq2))
 
@@ -143,11 +144,17 @@ class Agitator(object):
         '''Set both motor voltages to 0'''
         self.logger.info('Stopping agitation')
         self.set_voltage(0)
+        self._freq = 0
 
     def set_voltage(self, voltage):
         '''Set both motor voltages to the given voltage'''
         self.set_voltage1(voltage)
         self.set_voltage2(voltage)
+
+    # Getters for the frequencies
+
+    def get_freq(self):
+        return self._freq
 
     # Getters and setters for the motor voltages
 
