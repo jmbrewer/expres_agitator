@@ -74,12 +74,11 @@ class Agitator(object):
     def __del__(self):
         '''
         When the object is deleted, make sure all threads are closed and
-        agitator is stopped.
+        agitator is stopped. Unfortunately, these actions cannot be logged
+        because the logger closes by the time __del__ is called...
         '''
-        self.logger.debug('Deleting Agitator object')
         self.stop(verbose=False)
         self.stop_agitation(verbose=False)
-        logging.shutdown()
 
     def threaded_agitation(self, exp_time, timeout, **kwargs):
         '''Threadable function allowing stop event'''
