@@ -77,8 +77,8 @@ class Agitator(object):
         agitator is stopped.
         '''
         self.logger.debug('Deleting Agitator object')
-        self.stop()
-        self.stop_agitation()
+        self.stop(verbose=False)
+        self.stop_agitation(verbose=False)
         logging.shutdown()
 
     def threaded_agitation(self, exp_time, timeout, **kwargs):
@@ -109,16 +109,18 @@ class Agitator(object):
                              kwargs=kwargs)
         self.thread.start()
 
-    def stop(self):
+    def stop(self, verbose=True):
         '''Stop the agitation thread if it is running'''
         if self.thread is not None and self.thread.is_alive():
             while self.voltage1 > 0 or self.voltage2 > 0:
-                self.logger.info('Attempting to stop threaded agitation')
+                if verbose:
+                    self.logger.info('Attempting to stop threaded agitation')
                 self.stop_event.set()
                 self.thread.join(2)
         if self.voltage1 > 0 or self.voltage2 > 0:
             # As a backup in case something went wrong
-            self.logger.error('Something went wrong when trying to stop threaded agitation. Forcing agitator to stop.')
+            if verbose:
+                self.logger.error('Something went wrong when trying to stop threaded agitation. Forcing agitator to stop.')
             self.stop_agitation()
 
     def start_agitation(self, exp_time=60.0, rot=None):
@@ -144,9 +146,10 @@ class Agitator(object):
         self.set_voltage1(Motor1.calc_voltage(self.battery_voltage, freq1))
         self.set_voltage2(Motor2.calc_voltage(self.battery_voltage, freq2))
 
-    def stop_agitation(self):
+    def stop_agitation(self, verbose=True):
         '''Set both motor voltages to 0'''
-        self.logger.info('Stopping agitation')
+        if verbose:
+            self.logger.info('Stopping agitation')
         self.set_voltage(0)
         self._freq = 0
 
