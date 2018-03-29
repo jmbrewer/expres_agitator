@@ -51,7 +51,10 @@ class Agitator(object):
         self.logger = logging.getLogger('expres_agitator')
         self.logger.setLevel(logging.DEBUG)
         # Create file handler to log all messages
-        fh = logging.FileHandler('agitator.log')
+        try:
+            fh = logging.FileHandler('C:/Users/admin/repos/expres_agitator/agitator.log')
+        except FileNotFoundError:
+            fh = logging.FileHandler('agitator.log')
         fh.setLevel(logging.DEBUG)
         # Create console handler to log info messages
         ch = logging.StreamHandler()
