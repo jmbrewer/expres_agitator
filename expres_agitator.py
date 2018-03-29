@@ -7,7 +7,7 @@
     fiber agitator from a terminal.
 """
 import numpy as np
-from time import sleep
+import time
 from threading import Thread, Event
 import logging
 from roboclaw import Roboclaw
@@ -86,10 +86,11 @@ class Agitator(object):
         self.logger.info('Starting agitator thread for {}s exposure with {}s timeout'.format(exp_time, timeout))
         self.start_agitation(exp_time, **kwargs)
         t = 0
+        start_time = time.time()
         while not self.stop_event.is_set() and t < timeout:
-            sleep(1)
-            t += 1
-            self.logger.debug('{}/{}s for {}s exposure. I1: {}, I2: {}'.format(t, timeout, exp_time, self.current1, self.current2))
+            time.sleep(1)
+            t = time.time() - start_time
+            self.logger.debug('{}/{}s for {}s exposure. I1: {}, I2: {}'.format(round(t,1), timeout, exp_time, self.current1, self.current2))
         self.stop_agitation()
         self.stop_event.clear() # Allow for future agitation events
 
@@ -154,9 +155,10 @@ class Agitator(object):
         self.set_voltage1(voltage)
         self.set_voltage2(voltage)
 
-    # Getters for the frequencies
+    # Getter for the frequency
 
     def get_freq(self):
+        self.logger.info('Requesting frequency')
         return self._freq
 
     # Getters and setters for the motor voltages
@@ -307,6 +309,6 @@ if __name__ == '__main__':
             break
 
         ag.start_agitation(exp_time=60.0, rot=60.0*freq)
-        sleep(1)
+        time.sleep(1)
 
     ag.stop_agitation()
