@@ -53,7 +53,7 @@ class Agitator(object):
         # Create file handler to log all messages
         try:
             fh = logging.handlers.TimedRotatingFileHandler(
-                'C:/Users/admin/repos/expres_agitator/agitator.log',
+                'C:/Users/admin/agitator_logs/agitator.log',
                 when='D',
                 interval=1,
                 utc=True,
