@@ -9,7 +9,7 @@
 import numpy as np
 import time
 from threading import Thread, Event
-import logging
+import logging, logging.handlers
 from roboclaw import Roboclaw
 
 __DEFAULT_PORT__ = 'COM13'
@@ -52,9 +52,19 @@ class Agitator(object):
         self.logger.setLevel(logging.DEBUG)
         # Create file handler to log all messages
         try:
-            fh = logging.FileHandler('C:/Users/admin/repos/expres_agitator/agitator.log')
+            fh = logging.handlers.TimedRotatingFileHandler(
+                'C:/Users/admin/repos/expres_agitator/agitator.log',
+                when='D',
+                interval=1,
+                utc=True,
+                backupCount=5)
         except FileNotFoundError:
-            fh = logging.FileHandler('agitator.log')
+            fh = logging.handlers.TimedRotatingFileHandler(
+                'agitator.log',
+                when='D',
+                interval=1,
+                utc=True,
+                backupCount=5)
         fh.setLevel(logging.DEBUG)
         # Create console handler to log info messages
         ch = logging.StreamHandler()
@@ -89,7 +99,7 @@ class Agitator(object):
         while not self.stop_event.is_set() and t < timeout:
             time.sleep(1)
             t = time.time() - start_time
-            self.logger.debug('{}/{}s for {}s exposure. I1: {}, I2: {}'.format(round(t,1), timeout, exp_time, self.current1, self.current2))
+            self.logger.info('{}/{}s for {}s exposure. I1: {}, I2: {}'.format(round(t,1), timeout, exp_time, self.current1, self.current2))
         self.stop_agitation()
         self.stop_event.clear() # Allow for future agitation events
 
@@ -125,7 +135,7 @@ class Agitator(object):
     def start_agitation(self, exp_time=60.0, rot=None):
         '''Set the motor voltages for the given number of rotations in exp_time'''
         if exp_time <= 0:
-            self.logger.info('Non-positive exposure time given to agitator object')
+            self.logger.warning('Non-positive exposure time given to agitator object')
             self.stop_agitation()
             return
 
@@ -133,7 +143,7 @@ class Agitator(object):
             rot = 0.5 * exp_time
 
         if rot <= 0:
-            self.logger.info('Non-positive rotation number given to agitator object')
+            self.logger.warning('Non-positive rotation number given to agitator object')
             self.stop_agitation()
             return
 
