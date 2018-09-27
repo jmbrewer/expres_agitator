@@ -1,11 +1,17 @@
-# import jsonrpclib.SimpleJSONRPCServer.SimpleJSONRPCServer as JSONRPCServer
-# import jsonrpcserver.methods.Methods as JSONRPCServer
+"""
+    EXPRES Fiber Agitator Server module
+
+    Provides an XMLRPC server that will send/receive messages
+    to/from an Agitator object.
+"""
 from xmlrpc.server import SimpleXMLRPCServer as RPCServer
 from expres_agitator import Agitator
+
 
 __DEFAULT_HOST__ = 'expres2.lowell.edu'
 __DEFAULT_PORT__ = 5001
 __DEFAULT_COMPORT__ = 'COM13'
+
 
 class AgitatorServer(RPCServer):
     """
@@ -13,11 +19,23 @@ class AgitatorServer(RPCServer):
         of the Agitator class (with the given COM port) at the given host and
         port.
     """
-    def __init__(self, host, port, *args, comport=__DEFAULT_COMPORT__, **kwargs):
-        super().__init__((host, port), *args, **kwargs)
-        agitator = Agitator(comport)
-        agitator.logger.info('Opening agitator server on http://{}:{}'.format(host, port))
-        self.register_instance(agitator)
+    def __init__(self, host=__DEFAULT_HOST__, port=__DEFAULT_PORT__,
+                 comport=__DEFAULT_COMPORT__, **kwargs):
+        super().__init__((host, port), **kwargs)
+        self.agitator = Agitator(comport)
+        self.agitator.logger.info('Opening agitator server on http://{}:{}'.format(host, port))
+        self.register_instance(self.agitator)
+
+    def serve_forever(self):
+        self.agitator.logger.info('Starting agitator server')
+        self.kill = False
+        while not self.kill:
+            self.handle_request()
+
+    def stop(self):
+        self.agitator.logger.info('Stopping agitator server')
+        self.kill = True
+
 
 if __name__ == '__main__':
     import sys
@@ -48,4 +66,5 @@ if __name__ == '__main__':
         server.serve_forever()
     except KeyboardInterrupt:
         print('Keyboard Interrupt received. Closing server and exiting...')
+        server.stop()
         sys.exit(0)
