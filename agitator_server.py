@@ -53,7 +53,8 @@ if __name__ == '__main__':
         try:
             server = AgitatorServer(args.host, args.port,
                                     comport=args.comport,
-                                    allow_none=True)
+                                    allow_none=True,
+                                    logRequests=False)
             break
         except Exception as err:
             print('Error while connecting to agitator: {}'.format(err))
