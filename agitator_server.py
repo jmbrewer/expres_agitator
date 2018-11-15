@@ -8,7 +8,7 @@ from xmlrpc.server import SimpleXMLRPCServer as RPCServer
 from expres_agitator import Agitator
 
 
-__DEFAULT_HOST__ = "0.0.0.0" # 'expres2.lowell.edu'
+__DEFAULT_HOST__ = 'expres2.lowell.edu'
 __DEFAULT_PORT__ = 5001
 __DEFAULT_COMPORT__ = 'COM13'
 
