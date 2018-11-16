@@ -37,7 +37,7 @@ class PySvc(win32serviceutil.ServiceFramework):
         
         # Create a new Exposure Meter Object
         #  turn off logRequests because Service can't write to stdout
-        self.server = AgitatorServer(logRequests=False)
+        self.server = AgitatorServer(logRequests=False, allow_none=True)
         
         self.ReportServiceStatus(win32service.SERVICE_RUNNING)
         servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,
