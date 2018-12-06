@@ -134,16 +134,24 @@ class Agitator(object):
 
     def start_agitation(self, exp_time=60.0, rot=None):
         '''Set the motor voltages for the given number of rotations in exp_time'''
-        if exp_time <= 0:
-            self.logger.warning('Non-positive exposure time given to agitator object')
+        if exp_time < 0:
+            self.logger.warning('Negative exposure time given to agitator object')
+            self.stop_agitation()
+            return
+        elif exp_time == 0:
+            self.logger.info('0.0s exposure time given to agitator object')
             self.stop_agitation()
             return
 
         if rot is None:
             rot = 0.5 * exp_time
 
-        if rot <= 0:
-            self.logger.warning('Non-positive rotation number given to agitator object')
+        if rot < 0:
+            self.logger.warning('Negative rotation number given to agitator object')
+            self.stop_agitation()
+            return
+        elif rot == 0.0:
+            self.logger.info('Zero rotation number given to agitator object')
             self.stop_agitation()
             return
 
@@ -224,7 +232,11 @@ class Agitator(object):
     # Getter for the motor controller power source voltage
 
     def get_battery_voltage(self):
-        return self._rc.ReadMainBatteryVoltage()[1] / 10
+        voltage = self._rc.ReadMainBatteryVoltage()[1] / 10
+        # Check to make sure the voltage is correct
+        if not voltage > 0.0:
+            voltage = 24.0
+        return voltage
 
     battery_voltage = property(get_battery_voltage)
 
