@@ -54,17 +54,17 @@ class Agitator(object):
         try:
             fh = logging.handlers.TimedRotatingFileHandler(
                 'C:/Users/admin/agitator_logs/agitator.log',
-                when='D',
-                interval=1,
+                when='H',
+                interval=12,
                 utc=True,
-                backupCount=5)
+                backupCount=10)
         except FileNotFoundError:
             fh = logging.handlers.TimedRotatingFileHandler(
                 'agitator.log',
-                when='D',
-                interval=1,
+                when='H',
+                interval=12,
                 utc=True,
-                backupCount=5)
+                backupCount=10)
         fh.setLevel(logging.DEBUG)
         # Create console handler to log info messages
         ch = logging.StreamHandler()
