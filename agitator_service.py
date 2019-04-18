@@ -35,7 +35,7 @@ class PySvc(win32serviceutil.ServiceFramework):
                               servicemanager.PYS_SERVICE_STARTING,
                               (self._svc_name_,' Starting Agitator'))
         
-        # Create a new Exposure Meter Object
+        # Create a new Agitator Object
         #  turn off logRequests because Service can't write to stdout
         self.server = AgitatorServer(logRequests=False, allow_none=True)
         
@@ -58,14 +58,14 @@ class PySvc(win32serviceutil.ServiceFramework):
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
         servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,
                               servicemanager.PYS_SERVICE_STOPPING,
-                              (self._svc_name_,' Shutting Down Exposure Meter'))
+                              (self._svc_name_,' Shutting Down EXPRES Agitator'))
         # Stop the server
         self.server.stop()
         
         self.ReportServiceStatus(win32service.SERVICE_STOPPED) 
         servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,
                               servicemanager.PYS_SERVICE_STOPPED,
-                              (self._svc_name_,' Exposure Meter Stopped'))
+                              (self._svc_name_,' EXPRES Agitator Stopped'))
                               
         # fire the stop event  
         win32event.SetEvent(self.hWaitStop)
