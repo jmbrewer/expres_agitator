@@ -10,7 +10,7 @@ from expres_agitator import Agitator
 
 __DEFAULT_HOST__ = 'expres2.lowell.edu'
 __DEFAULT_PORT__ = 5001
-__DEFAULT_COMPORT__ = 'COM13'
+__DEFAULT_COMPORT__ = 'COM12'
 
 
 class AgitatorServer(RPCServer):
