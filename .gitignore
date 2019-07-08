@@ -6,3 +6,6 @@ desktop.ini
 build/
 *.pyc
 
+# PyCharm
+.idea/
+
