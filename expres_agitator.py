@@ -13,7 +13,7 @@ import logging, logging.handlers
 from roboclaw import Roboclaw
 
 
-__DEFAULT_PORT__ = 'COM13'
+__DEFAULT_PORT__ = 'COM12'
 __DEFAULT_BAUD_RATE__ = 38400
 __DEFAULT_ADDR__ = 0x80
 __DEFAULT_TIMEOUT__ = 3.0
@@ -106,7 +106,8 @@ class Agitator(object):
         while not self.stop_event.is_set() and t < timeout:
             time.sleep(1)
             t = time.time() - start_time
-            self.logger.info(f'{round(t, 1)}/{timeout}s for {exp_time}s exposure. I1: {self.current1}, I2: {self.current2}')
+            # self.logger.info(f'{round(t, 1)}/{timeout}s for {exp_time}s exposure. I1: {self.current1}, I2: {self.current2}')
+            self.logger.info(f'{round(t, 1)}/{timeout}s for {exp_time}s exposure')
 
         self.stop_agitation()
 
