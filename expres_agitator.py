@@ -12,6 +12,7 @@ from threading import Thread, Event
 import logging, logging.handlers
 from roboclaw import Roboclaw
 
+
 __DEFAULT_PORT__ = 'COM13'
 __DEFAULT_BAUD_RATE__ = 38400
 __DEFAULT_ADDR__ = 0x80
@@ -19,8 +20,9 @@ __DEFAULT_TIMEOUT__ = 3.0
 __DEFAULT_RETRIES__ = 3
 __DEFAULT_INTER_BYTE_TIMEOUT__ = 1.0
 
+
 class Agitator(object):
-    '''Class for controlling the EXPRES fiber agitator
+    """Class for controlling the EXPRES fiber agitator
     
     Inputs
     ------
@@ -37,7 +39,7 @@ class Agitator(object):
         Stop either threaded or unthreaded agitation
     stop_agitation():
         Hard-stop agitation but will not close thread
-    '''
+    """
 
     def __init__(self, comport=__DEFAULT_PORT__):
         self._rc = Roboclaw(comport=comport,
@@ -50,29 +52,33 @@ class Agitator(object):
         # Create a logger for the agitator
         self.logger = logging.getLogger('expres_agitator')
         self.logger.setLevel(logging.DEBUG)
+
         # Create file handler to log all messages
         try:
             fh = logging.handlers.TimedRotatingFileHandler(
                 'C:/Users/admin/agitator_logs/agitator.log',
-                when='H',
-                interval=12,
+                when='D',
+                interval=1,
                 utc=True,
                 backupCount=10)
         except FileNotFoundError:
             fh = logging.handlers.TimedRotatingFileHandler(
                 'agitator.log',
-                when='H',
-                interval=12,
+                when='D',
+                interval=1,
                 utc=True,
                 backupCount=10)
         fh.setLevel(logging.DEBUG)
+
         # Create console handler to log info messages
         ch = logging.StreamHandler()
         ch.setLevel(logging.INFO)
+
         # create formatter and add it to the handlers
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         fh.setFormatter(formatter)
         ch.setFormatter(formatter)
+
         # add the handlers to the logger
         self.logger.addHandler(fh)
         self.logger.addHandler(ch)
@@ -82,32 +88,33 @@ class Agitator(object):
         self.stop_agitation() # Just to make sure
 
     def __del__(self):
-        '''
+        """
         When the object is deleted, make sure all threads are closed and
         agitator is stopped. Unfortunately, these actions cannot be logged
         because the logger closes by the time __del__ is called...
-        '''
+        """
         self.stop(verbose=False)
         self.stop_agitation(verbose=False)
 
     def threaded_agitation(self, exp_time, timeout, **kwargs):
-        '''Threadable function allowing stop event'''
-        self.logger.info('Starting agitator thread for {}s exposure with {}s timeout'.format(exp_time, timeout))
+        """Threadable function allowing stop event"""
+        self.logger.info(f'Starting agitator thread for {exp_time}s exposure with {timeout}s timeout')
         self.start_agitation(exp_time, **kwargs)
+
         t = 0
         start_time = time.time()
         while not self.stop_event.is_set() and t < timeout:
             time.sleep(1)
             t = time.time() - start_time
-            self.logger.info('{}/{}s for {}s exposure. I1: {}, I2: {}'.format(round(t,1), timeout, exp_time, self.current1, self.current2))
+            self.logger.info(f'{round(t, 1)}/{timeout}s for {exp_time}s exposure. I1: {self.current1}, I2: {self.current2}')
+
         self.stop_agitation()
-        self.stop_event.clear() # Allow for future agitation events
 
     def start(self, exp_time=60.0, timeout=None, **kwargs):
-        '''
+        """
         Start a thread that starts agitation and stops if a stop event is
         called or if the timeout is reached
-        '''
+        """
         self.stop() # To close any previously opened threads
 
         if timeout is None: # Allow for some overlap time
@@ -119,7 +126,7 @@ class Agitator(object):
         self.thread.start()
 
     def stop(self, verbose=True):
-        '''Stop the agitation thread if it is running'''
+        """Stop the agitation thread if it is running"""
         if self.thread is not None and self.thread.is_alive():
             while self.voltage1 > 0 or self.voltage2 > 0:
                 if verbose:
@@ -133,7 +140,7 @@ class Agitator(object):
             self.stop_agitation()
 
     def start_agitation(self, exp_time=60.0, rot=None):
-        '''Set the motor voltages for the given number of rotations in exp_time'''
+        """Set the motor voltages for the given number of rotations in exp_time"""
         if exp_time < 0:
             self.logger.warning('Negative exposure time given to agitator object')
             self.stop_agitation()
@@ -159,19 +166,20 @@ class Agitator(object):
         freq2 = 0.9*rot/exp_time
         self._freq = freq1
 
-        self.logger.info('Starting agitation at approximately {} Hz'.format(self._freq))
+        self.logger.info(f'Starting agitation at approximately {self._freq} Hz')
         self.set_voltage1(Motor1.calc_voltage(self.battery_voltage, freq1))
         self.set_voltage2(Motor2.calc_voltage(self.battery_voltage, freq2))
 
     def stop_agitation(self, verbose=True):
-        '''Set both motor voltages to 0'''
+        """Set both motor voltages to 0"""
         if verbose:
             self.logger.info('Stopping agitation')
         self.set_voltage(0)
         self._freq = 0
+        self.stop_event.clear() # Allow for future agitation events
 
     def set_voltage(self, voltage):
-        '''Set both motor voltages to the given voltage'''
+        """Set both motor voltages to the given voltage"""
         self.set_voltage1(voltage)
         self.set_voltage2(voltage)
 
@@ -269,10 +277,10 @@ class Agitator(object):
     max_current2 = property(get_max_current2, set_max_current2)
 
 class Motor:
-    '''
+    """
     Class that determines a voltage for a motor given the slope and intercept
     of the voltage vs. frequency regression
-    '''
+    """
     # Approximately the average parameters of Motor 1 and Motor 2
     slope = 28.0
     intercept = 1.8
@@ -281,7 +289,7 @@ class Motor:
     
     @classmethod
     def calc_voltage(cls, battery_voltage, freq=0.5):
-        '''Calculate the voltage for the motor given a number of rotations per second'''
+        """Calculate the voltage for the motor given a number of rotations per second"""
         if freq > cls.max_freq:
             freq = cls.max_freq
 
@@ -294,19 +302,19 @@ class Motor:
         return voltage
 
 class Motor1(Motor):
-    '''Subclass of Motor with the parameters of Motor 1'''
+    """Subclass of Motor with the parameters of Motor 1"""
     slope = 27.81
     intercept = 2.06
     max_freq = 0.5
 
 class Motor2(Motor):
-    '''Subclass of Motor with the parameters of Motor 2'''
+    """Subclass of Motor with the parameters of Motor 2"""
     slope = 28.49
     intercept = 1.58
     max_freq = 0.45
 
 if __name__ == '__main__':
-    '''Script to allow terminal control of the motors
+    """Script to allow terminal control of the motors
     
     To run, execute from the containing folder:
     python expres_agitator.py <com_port>
@@ -318,7 +326,7 @@ if __name__ == '__main__':
     Input the appropriate exposure time and press enter. If you would like to
     stop the agitator input 0. If you would like to close the program, input
     anything that is not a number (or press ctrl-c).
-    '''
+    """
     import sys
 
     com_port = sys.argv[1]
