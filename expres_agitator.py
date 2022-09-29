@@ -23,7 +23,7 @@ __DEFAULT_INTER_BYTE_TIMEOUT__ = 1.0
 
 class Agitator(object):
     """Class for controlling the EXPRES fiber agitator
-    
+
     Inputs
     ------
     comport : str
@@ -287,7 +287,7 @@ class Motor:
     intercept = 1.8
     max_freq = 0.5
     min_voltage = 5.0
-    
+
     @classmethod
     def calc_voltage(cls, battery_voltage, freq=0.5):
         """Calculate the voltage for the motor given a number of rotations per second"""
@@ -300,7 +300,7 @@ class Motor:
             return battery_voltage
         elif voltage < cls.min_voltage:
             return cls.min_voltage
-        return voltage
+        return -voltage #AES hack for Roboclaw that one-side can't go forward
 
 class Motor1(Motor):
     """Subclass of Motor with the parameters of Motor 1"""
@@ -316,7 +316,7 @@ class Motor2(Motor):
 
 if __name__ == '__main__':
     """Script to allow terminal control of the motors
-    
+
     To run, execute from the containing folder:
     python expres_agitator.py <com_port>
     where <com_port> is the name of the COM Port (typically COM13 on expres2)
