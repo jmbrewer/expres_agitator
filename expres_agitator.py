@@ -190,6 +190,13 @@ class Agitator(object):
         self.logger.info('Requesting frequency')
         return self._freq
 
+    def read_enc( self):
+        self.logger.info( 'Reading encoders')
+        status1 = self._rc.ReadEncM1()
+        status2 = self._rc.ReadEncM2()
+        self.logger.info( f'Read: {status1} {status2}')
+        return ( f'{status1}', f'{status2}')
+
     # Getters and setters for the motor voltages
 
     def get_voltage1(self):
