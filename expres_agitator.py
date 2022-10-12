@@ -195,7 +195,7 @@ class Agitator(object):
         status1 = self._rc.ReadEncM1()
         status2 = self._rc.ReadEncM2()
         self.logger.info( f'Read: {status1} {status2}')
-        return ( f'{status1}', f'{status2}')
+        return { 'result' : { 'enc1' : status1, 'enc2': status2}}
 
     # Getters and setters for the motor voltages
 
@@ -307,7 +307,7 @@ class Motor:
             return battery_voltage
         elif voltage < cls.min_voltage:
             return cls.min_voltage
-        return -voltage #AES hack for Roboclaw that one-side can't go forward
+        return voltage
 
 class Motor1(Motor):
     """Subclass of Motor with the parameters of Motor 1"""
