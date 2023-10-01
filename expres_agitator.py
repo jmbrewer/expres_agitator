@@ -197,6 +197,12 @@ class Agitator(object):
         self.logger.info( f'Read: {status1} {status2}')
         return { 'result' : { 'enc1' : status1, 'enc2': status2}}
 
+    def zero_enc( self):
+        self.logger.info( 'Setting encoder counts to zero')
+        status1 = self._rc.SetEncM1( 0)
+        status2 = self._rc.SetEncM2( 0)
+        self.logger.info( f'Zero: {status1} {status2}')
+
     # Getters and setters for the motor voltages
 
     def get_voltage1(self):
