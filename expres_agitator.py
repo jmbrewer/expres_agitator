@@ -50,7 +50,7 @@ class Agitator(object):
                 inter_byte_timeout=__DEFAULT_INTER_BYTE_TIMEOUT__)
 
         self.QPPS = 9600
-        self.ACCEL = 100
+        self.ACCEL = 1800
 
         # Create a logger for the agitator
         self.logger = logging.getLogger('expres_agitator')
