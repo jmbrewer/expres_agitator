@@ -227,7 +227,7 @@ class Agitator(object):
         #    self._rc.BackwardM1(int(-voltage/battery_voltage*127))
 
         self._rc.SpeedAccelM1( self.ACCEL,
-                               int( self.QPPS * voltage / battery_voltage))
+                               int( 0.5 * self.QPPS * voltage / battery_voltage))
 
         self._voltage1 = voltage
 
@@ -246,7 +246,7 @@ class Agitator(object):
         #    self._rc.BackwardM2(int(-voltage/battery_voltage*127))
 
         self._rc.SpeedAccelM2( self.ACCEL,
-                               int( self.QPPS * voltage / battery_voltage))
+                               int( 0.5 * self.QPPS * voltage / battery_voltage))
 
         self._voltage2 = voltage
 
