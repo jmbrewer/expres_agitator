@@ -10,7 +10,7 @@ class Roboclaw:
     modification. Used to open a connection and send commands to the RoboClaw
     motor controller using pyserial.
     """
-    
+
     def __init__(self, comport, rate=38400, addr=0x80, timeout=3,
             inter_byte_timeout=0.1, retries=3):
         self.comport = comport
@@ -119,11 +119,11 @@ class Roboclaw:
         SETPWMMODE = 148
         GETPWMMODE = 149
         FLAGBOOTLOADER = 255
-            
+
     # Private Functions
     def _crc_clear(self):
         self._crc = 0
-        
+
     def _crc_update(self,data):
         self._crc = self._crc ^ (data << 8)
         for bit in range(8):
@@ -141,17 +141,17 @@ class Roboclaw:
         data = self._comport.read(2)
         if len(data) == 2:
             crc = (data[0]<<8 | data[1])
-            return (1,crc)  
+            return (1,crc)
         return (0,0)
-        
+
     def _readbyte(self):
         data = self._comport.read(1)
         if len(data):
             val = ord(data)
             self._crc_update(val)
-            return (1,val)  
+            return (1,val)
         return (0,0)
-        
+
     def _readword(self):
         val1 = self._readbyte()
         if val1[0]:
@@ -170,7 +170,7 @@ class Roboclaw:
                     val4 = self._readbyte()
                     if val4[0]:
                         return (1,val1[1]<<24|val2[1]<<16|val3[1]<<8|val4[1])
-        return (0,0)    
+        return (0,0)
 
     def _readslong(self):
         val = self._readlong()
@@ -193,7 +193,7 @@ class Roboclaw:
     def _writeword(self,val):
         self._writebyte((val>>8)&0xFF)
         self._writebyte(val&0xFF)
-        
+
     def _writesword(self,val):
         self._writeword(val)
 
@@ -748,10 +748,12 @@ class Roboclaw:
         return self._write1(self.Cmd.SETMAXLB,val)
 
     def SetM1VelocityPID(self,p,i,d,qpps):
-        return self._write4444(self.Cmd.SETM1PID,long(d*65536),long(p*65536),long(i*65536),qpps)
+#        return self._write4444(self.Cmd.SETM1PID,long(d*65536),long(p*65536),long(i*65536),qpps)
+        return self._write4444(self.Cmd.SETM1PID,int(d*65536),int(p*65536),int(i*65536),qpps)
 
     def SetM2VelocityPID(self,p,i,d,qpps):
-        return self._write4444(self.Cmd.SETM2PID,long(d*65536),long(p*65536),long(i*65536),qpps)
+#        return self._write4444(self.Cmd.SETM2PID,long(d*65536),long(p*65536),long(i*65536),qpps)
+        return self._write4444(self.Cmd.SETM2PID,int(d*65536),int(p*65536),int(i*65536),qpps)
 
     def ReadISpeedM1(self):
         return self._read4_1(self.Cmd.GETM1ISPEED)
@@ -848,7 +850,7 @@ class Roboclaw:
 
     def DutyAccelM1M2(self,accel1,duty1,accel2,duty2):
         return self._writeS24S24(self.Cmd.MIXEDDUTYACCEL,duty1,accel1,duty2,accel2)
-        
+
     def ReadM1VelocityPID(self):
         data = self._read_n(self.Cmd.READM1PID,4)
         if data[0]:
@@ -869,10 +871,10 @@ class Roboclaw:
 
     def SetMainVoltages(self,minim,maxim):
         return self._write22(self.Cmd.SETMAINVOLTAGES,minim,maxim)
-        
+
     def SetLogicVoltages(self,minim,maxim):
         return self._write22(self.Cmd.SETLOGICVOLTAGES,minim,maxim)
-        
+
     def ReadMinMaxMainVoltages(self):
         val = self._read4(self.Cmd.GETMINMAXMAINVOLTAGES)
         if val[0]:
@@ -903,7 +905,7 @@ class Roboclaw:
             data[3]/=1024.0
             return data
         return (0,0,0,0,0,0,0,0)
-        
+
     def ReadM2PositionPID(self):
         data = self._read_n(self.Cmd.READM2POSPID,7)
         if data[0]:
@@ -957,7 +959,7 @@ class Roboclaw:
         if val[0]:
             return (1, val[1]>>8, val[1]&0xFF)
         return (0,0,0)
-        
+
     #Warning(TTL Serial): Baudrate will change if not already set to 38400.  Communications will be lost
     def RestoreDefaults(self):
         return self._write0(self.Cmd.RESTOREDEFAULTS)
@@ -976,7 +978,7 @@ class Roboclaw:
         if val[0]:
             return (1,val[1]>>8,val[1]&0xFF)
         return (0,0,0)
-        
+
     def SetM1EncoderMode(self,mode):
         return self._write1(self.Cmd.SETM1ENCODERMODE,mode)
 
