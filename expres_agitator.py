@@ -49,6 +49,9 @@ class Agitator(object):
                 retries=__DEFAULT_RETRIES__,
                 inter_byte_timeout=__DEFAULT_INTER_BYTE_TIMEOUT__)
 
+        self.QPPS = 9600
+        self.ACCEL = 100
+
         # Create a logger for the agitator
         self.logger = logging.getLogger('expres_agitator')
         self.logger.setLevel(logging.DEBUG)
@@ -85,6 +88,11 @@ class Agitator(object):
 
         self.thread = None # In case stop() is called before a thread is created
         self.stop_event = Event() # Used for stopping threads
+
+        # here set any RoboClaw params
+        status = self._rc.SetM1VelocityPID( 1, 0, 0, self.QPPS)
+        status = self._rc.SetM2VelocityPID( 1, 0, 0, self.QPPS)
+
         self.stop_agitation() # Just to make sure
 
     def __del__(self):
@@ -212,10 +220,15 @@ class Agitator(object):
         battery_voltage = self.battery_voltage
         if abs(voltage) > battery_voltage:
             voltage = np.sign(voltage) * battery_voltage
-        if voltage >= 0:
-            self._rc.ForwardM1(int(voltage/battery_voltage*127))
-        else:
-            self._rc.BackwardM1(int(-voltage/battery_voltage*127))
+        #
+        #if voltage >= 0:
+        #    self._rc.ForwardM1(int(voltage/battery_voltage*127))
+        #else:
+        #    self._rc.BackwardM1(int(-voltage/battery_voltage*127))
+
+        self._rc.SpeedAccelM1( self.ACCEL,
+                               int( self.QPPS * voltage / battery_voltage))
+
         self._voltage1 = voltage
 
     voltage1 = property(get_voltage1, set_voltage1)
@@ -227,10 +240,14 @@ class Agitator(object):
         battery_voltage = self.battery_voltage
         if abs(voltage) > battery_voltage:
             voltage = np.sign(voltage) * battery_voltage
-        if voltage >= 0:
-            self._rc.ForwardM2(int(voltage/battery_voltage*127))
-        else:
-            self._rc.BackwardM2(int(-voltage/battery_voltage*127))
+        #if voltage >= 0:
+        #    self._rc.ForwardM2(int(voltage/battery_voltage*127))
+        #else:
+        #    self._rc.BackwardM2(int(-voltage/battery_voltage*127))
+
+        self._rc.SpeedAccelM2( self.ACCEL,
+                               int( self.QPPS * voltage / battery_voltage))
+
         self._voltage2 = voltage
 
     voltage2 = property(get_voltage2, set_voltage2)
